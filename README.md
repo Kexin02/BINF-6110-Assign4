@@ -56,6 +56,11 @@ Violin plots show distinct expression patterns of key markers used for cell type
 **Figure 6. UMAP visualization of annotated cell types.**  
 Clusters are assigned to major biological cell types based on canonical marker expression.
 
+![Feature_annotation](figures/7.Feature_annotation.png)
+
+**Figure 7. Spatial distribution of marker gene expression.**  
+Feature plots illustrate localization of canonical markers within the UMAP, confirming cluster identities.
+
 ### 3.4 Infection-related transcriptional programs
 
 To investigate infection-associated responses, the expression of interferon-stimulated and immune-related genes was examined. Genes such as Isg15, Ifit1, and Rsad2 exhibited elevated expression in specific epithelial and immune clusters (Figure 8), indicating activation of antiviral signaling pathways.
