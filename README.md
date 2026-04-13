@@ -1,8 +1,8 @@
-# BINF-6110-Assign4
+# 
 
-# 3. Results
+## 3. Results
 
-## 3.1 Quality control of single-cell RNA-seq data
+### 3.1 Quality control of single-cell RNA-seq data
 
 To ensure the reliability of downstream analyses, standard quality control metrics were first evaluated. The number of detected genes per cell (nFeature_RNA) exhibited comparable distributions across all timepoints, with similar medians and interquartile ranges (Figure 1). This indicates consistent library complexity and suggests that no subset of cells suffered from reduced gene detection.
 
@@ -111,4 +111,6 @@ These genes are associated with epithelial differentiation and barrier function,
 
 **Figure 13. Expression of representative cluster 24 marker genes.**  
 Dot plot shows expression level and proportion of expressing cells across clusters. Cluster 24 displays strong enrichment of epithelial remodeling markers.
+
+## 4. Discussion
 
