@@ -1,0 +1,498 @@
+---
+title: "BINF-6110-Assignment4"
+author: "Kexin Gong"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+0. Load packages
+```{r setup, message=FALSE, warning=FALSE}
+# Seurat: core single-cell workflow
+# dplyr/tibble: data wrangling
+# ggplot2/patchwork: plotting and figure layout
+# clusterProfiler + org.Mm.eg.db: enrichment analysis
+# future: avoid parallel-related Seurat issues on large objects
+# pheatmap: optional heatmap utility
+
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(clusterProfiler)
+library(org.Mm.eg.db)
+library(tibble)
+library(future)
+library(pheatmap)
+
+# Use sequential processing to avoid future/parallel memory errors
+plan("sequential")
+options(future.globals.maxSize = 8 * 1024^3)
+options(future.fork.enable = FALSE)
+```
+
+1. Import data
+```{r import-data}
+# Read the Seurat object provided for the assignment.
+# This object contains raw expression plus metadata such as:
+# time, organ_custom, biosample_id, and mouse_id.
+
+data <- readRDS("data/seurat_ass4.rds")
+```
+
+
+2. QC visualization
+```{r qc-violin, fig.width=12, fig.height=5}
+# Goal:
+# Check whether sequencing depth and detected gene numbers are
+# broadly comparable across time points before downstream analysis.
+# We are visualizing QC only and not applying extra filtering here,
+# because the data already looked clean in earlier inspection.
+
+# Violin plot for number of detected genes per cell
+p1 <- VlnPlot(
+  data,
+  features = "nFeature_RNA",
+  group.by = "time",
+  pt.size = 0
+) +
+  geom_boxplot(width = 0.1, fill = "white") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14)
+
+# Violin plot for UMI counts per cell
+p2 <- VlnPlot(
+  data,
+  features = "nCount_RNA",
+  group.by = "time",
+  pt.size = 0
+) +
+  geom_boxplot(width = 0.1, fill = "white") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14)
+
+print(p1)
+print(p2)
+```
+
+```{r qc-scatter, fig.width=7, fig.height=5}
+# Scatter plot showing the relationship between UMI counts and
+# detected genes. A strong positive correlation indicates good
+# library complexity and overall healthy QC structure.
+p_scatter <- FeatureScatter(
+  data,
+  feature1 = "nCount_RNA",
+  feature2 = "nFeature_RNA",
+  group.by = "time"
+)
+
+print(p_scatter)
+
+# Explicitly calculate the correlation used in the QC description
+cor_value <- cor(data$nCount_RNA, data$nFeature_RNA)
+cor_value
+```
+
+3. Focus on respiratory mucosa (RM) for downstream analysis
+```{r rm subset}
+# Restrict to RM because:
+# 1) RM is the main region relevant to the infection story
+# 2) RM provides a cleaner biological interpretation
+# 3) downstream marker, composition, and remodeling analyses are
+#    easier to support in this subset
+
+data_rm <- subset(data, subset = organ_custom == "RM")
+
+# Check that all time points are represented in RM
+table(data_rm$time)
+```
+
+```{r rm-clustering}
+# Re-run preprocessing and clustering within RM only
+# This gives a region-specific clustering structure for the main analysis
+DefaultAssay(data_rm) <- "RNA"
+
+data_rm <- NormalizeData(data_rm)
+data_rm <- FindVariableFeatures(data_rm, selection.method = "vst", nfeatures = 2000)
+data_rm <- ScaleData(data_rm)
+data_rm <- RunPCA(data_rm, verbose = FALSE)
+data_rm <- RunUMAP(data_rm, dims = 1:20)
+data_rm <- FindNeighbors(data_rm, dims = 1:20)
+data_rm <- FindClusters(data_rm, resolution = 0.5)
+```
+
+```{r rm-umap-cluster, fig.width=8, fig.height=6}
+# UMAP colored by cluster identity
+p_rm_cluster <- DimPlot(
+  data_rm,
+  reduction = "umap",
+  group.by = "seurat_clusters",
+  label = TRUE,
+  raster = FALSE
+) + theme_minimal()
+
+print(p_rm_cluster)
+```
+
+```{r rm-umap-time, fig.width=8, fig.height=6}
+# UMAP colored by time point
+# This is useful for inspection, but not the main evidence for
+# temporal change because global UMAP structure is mostly driven by
+# cell identity rather than time.
+p_rm_time <- DimPlot(
+  data_rm,
+  reduction = "umap",
+  group.by = "time",
+  raster = FALSE
+) + theme_minimal()
+
+print(p_rm_time)
+```
+
+4. Annotation (manual, based on canonical markers)
+```{r marker-violin, fig.width=10, fig.height=8}
+# Strategy:
+# 1) use known canonical markers to identify broad cell types
+# 2) use FindAllMarkers on RM only for support, not as the sole basis
+#    of annotation
+# This avoids over-interpreting noisy cluster-specific genes while
+# still giving biologically grounded labels.
+
+# Marker violin plot for broad annotation
+plot_markers <- VlnPlot(
+  data_rm,
+  features = c("Epcam", "Cd3e", "Lyz2", "Krt13", "Cnga4"),
+  group.by = "seurat_clusters",
+  stack = TRUE,
+  flip = TRUE
+) + theme(legend.position = "none")
+
+print(plot_markers)
+```
+
+```{r find-rm-markers}
+# Set cluster identity before marker analysis
+Idents(data_rm) <- "seurat_clusters"
+
+# Find cluster markers within RM
+# max.cells.per.ident is used to reduce memory pressure
+markers_rm <- FindAllMarkers(
+  data_rm,
+  only.pos = TRUE,
+  min.pct = 0.25,
+  logfc.threshold = 0.25,
+  max.cells.per.ident = 2000
+)
+
+# Extract top markers per cluster for inspection
+top_markers_rm <- markers_rm %>%
+  group_by(cluster) %>%
+  slice_max(order_by = avg_log2FC, n = 10) %>%
+  ungroup()
+
+print(top_markers_rm)
+```
+
+```{r manual-annotation}
+# Manual annotation derived from:
+# - marker violin plots
+# - top cluster markers
+# - biological interpretation of the RM dataset
+data_rm$celltype <- "Other"
+
+# Olfactory neuron-like clusters
+data_rm$celltype[data_rm$seurat_clusters %in% c(0, 29)] <- "Olfactory_neuron"
+
+# T-cell clusters
+data_rm$celltype[data_rm$seurat_clusters %in% c(2, 28)] <- "T_cells"
+
+# Myeloid clusters
+data_rm$celltype[data_rm$seurat_clusters %in% c(3, 4, 8)] <- "Myeloid"
+
+# IFN-responsive epithelial-like clusters
+data_rm$celltype[data_rm$seurat_clusters %in% c(5, 9, 10)] <- "IFN_epithelial"
+
+# Remodeling epithelial cluster of main interest
+data_rm$celltype[data_rm$seurat_clusters %in% c(24)] <- "Remodeling_epithelial"
+
+# Remaining epithelial-enriched clusters
+data_rm$celltype[data_rm$seurat_clusters %in% c(
+  1, 6, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27
+)] <- "Epithelial"
+```
+
+```{r annotated-umap, fig.width=10, fig.height=7}
+# Annotated UMAP
+plot_annoted <- DimPlot(
+  data_rm,
+  reduction = "umap",
+  group.by = "celltype",
+  label = TRUE,
+  repel = TRUE,
+  raster = FALSE
+) + theme_minimal()
+
+print(plot_annoted)
+```
+
+5. Feature plots of genes of interest
+
+These feature plots serve two different purposes:
+ 7A) validate annotation
+ 7B) support the biological story of IFN response and remodeling
+
+5A. Canonical markers supporting annotation
+```{r feature-annotation, fig.width=10, fig.height=8}
+genes_annotation <- c("Epcam", "Cd3e", "Lyz2", "Krt13", "Cnga4")
+genes_annotation <- intersect(genes_annotation, rownames(data_rm))
+
+p_annot_features <- FeaturePlot(
+  data_rm,
+  features = genes_annotation,
+  keep.scale = "all",
+  raster = FALSE
+)
+
+print(p_annot_features)
+```
+
+5B. Genes supporting the biological story
+```{r feature-story, fig.width=10, fig.height=8}
+genes_story <- c("Isg15", "Ifit1", "Rsad2", "Cxcl16", "Cd274")
+genes_story <- intersect(genes_story, rownames(data_rm))
+
+p_story_features <- FeaturePlot(
+  data_rm,
+  features = genes_story,
+  keep.scale = "all",
+  raster = FALSE
+)
+
+print(p_story_features)
+```
+
+6. Differential expression analysis of one cluster
+
+```{r}
+# Main idea:
+# cluster 24 is treated as a remodeling epithelial population.
+# For this cluster, the most informative comparison is not
+# D14 vs Naive within the cluster, but rather:
+# cluster 24 versus all other RM cells.
+# This identifies genes that define the remodeling epithelial state.
+
+# cluster 24 = remodeling epithelial
+cluster_of_interest <- 24
+```
+
+6A. Check abundance of cluster 24 across time
+
+```{r cluster24-abundance}
+# This captures the temporal emergence/enrichment of cluster 24,
+# which is a major part of the biological story.
+
+cluster_abundance <- data_rm@meta.data %>%
+  mutate(cluster_flag = ifelse(seurat_clusters == cluster_of_interest, "cluster24", "other")) %>%
+  group_by(time, cluster_flag) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(time) %>%
+  mutate(freq = n / sum(n))
+
+print(cluster_abundance)
+```
+
+```{r cluster24-abundance-plot, fig.width=7, fig.height=8}
+# Plot relative abundance of cluster 24 across time
+p_cluster24_abundance <- ggplot(
+  cluster_abundance %>% filter(cluster_flag == "cluster24"),
+  aes(x = time, y = freq, group = 1)
+) +
+  geom_point(size = 3, color = "firebrick") +
+  geom_line(color = "firebrick") +
+  theme_minimal() +
+  labs(
+    title = "Relative abundance of cluster 24 across time",
+    x = "Time",
+    y = "Proportion"
+  )
+
+print(p_cluster24_abundance)
+```
+
+6B. Identify marker genes of cluster 24 versus all other RM cells
+```{r cluster24-de}
+Idents(data_rm) <- "seurat_clusters"
+
+de_cluster <- FindMarkers(
+  data_rm,
+  ident.1 = as.character(cluster_of_interest),
+  only.pos = FALSE,
+  logfc.threshold = 0.25,
+  min.pct = 0.25,
+  max.cells.per.ident = 2000
+)
+
+de_cluster <- de_cluster %>%
+  rownames_to_column("gene") %>%
+  arrange(p_val_adj, desc(avg_log2FC))
+
+print(head(de_cluster, 20))
+```
+
+
+7. ORA / GSEA for cluster 24 markers
+ ORA and GSEA are both performed on the cluster 24 marker list.
+ ORA summarizes significantly upregulated genes only.
+ GSEA uses the full ranked list and can capture broader programs.
+
+7A. ORA using significantly upregulated genes in cluster 24
+```{r ora-cluster24, fig.width=10, fig.height=6}
+sig_up_genes <- de_cluster %>%
+  filter(p_val_adj < 0.05, avg_log2FC > 0) %>%
+  pull(gene)
+
+# Keep only valid mouse gene symbols
+sig_up_genes <- intersect(sig_up_genes, keys(org.Mm.eg.db, keytype = "SYMBOL"))
+
+if (length(sig_up_genes) > 0) {
+  
+  ora_res <- enrichGO(
+    gene = sig_up_genes,
+    OrgDb = org.Mm.eg.db,
+    keyType = "SYMBOL",
+    ont = "BP",
+    pAdjustMethod = "BH"
+  )
+  
+  # Inspect enrichment table
+  ora_df <- as.data.frame(ora_res)
+  print(head(ora_df, 20))
+  
+  # Cleaner ORA dotplot
+  p_ora <- dotplot(ora_res, showCategory = 12) +
+    theme_minimal(base_size = 12) +
+    theme(
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(hjust = 0.5)
+    ) +
+    labs(
+      title = "GO enrichment of cluster 24 markers",
+      x = "Gene Ratio",
+      y = NULL
+    ) +
+    scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 30))
+  print(p_ora)
+} else {
+  message("No significant upregulated genes found for ORA.")
+}
+```
+
+7B. GSEA using ranked cluster-specific marker list
+```{gsea-cluster24, fig.width=10, fig.height=6}
+gene_list <- de_cluster$avg_log2FC
+names(gene_list) <- de_cluster$gene
+gene_list <- gene_list[!is.na(gene_list)]
+gene_list <- sort(gene_list, decreasing = TRUE)
+gene_list <- gene_list[names(gene_list) %in% keys(org.Mm.eg.db, keytype = "SYMBOL")]
+
+if (length(gene_list) > 10) {
+  
+  gsea_res <- gseGO(
+    geneList = gene_list,
+    OrgDb = org.Mm.eg.db,
+    keyType = "SYMBOL",
+    ont = "BP",
+    pvalueCutoff = 0.05
+  )
+  
+  # Inspect enrichment table
+  gsea_df <- as.data.frame(gsea_res)
+  print(head(gsea_df, 20))
+  
+  if (nrow(gsea_df) > 0) {
+    
+    p_gsea <- dotplot(gsea_res, showCategory = 12) +
+      theme_minimal(base_size = 12) +
+      theme(
+        axis.text.y = element_text(size = 10),
+        plot.title = element_text(hjust = 0.5)
+      ) +
+      labs(
+        title = "GSEA of cluster 24 marker genes",
+        x = "Gene Ratio",
+        y = NULL
+      ) +
+      scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 30))
+    
+    print(p_gsea)
+    
+    # Optional save
+    # ggsave("cluster24_GSEA_dotplot.png", p_gsea, width = 10, height = 6)
+    
+  } else {
+    message("No significant GSEA terms found.")
+  }
+  
+} else {
+  message("Not enough genes available for GSEA.")
+}
+```
+
+8. Additional visualization: cell composition across time
+```{r cell-composition, fig.width=10, fig.height=6}
+#cluster 24 abundance plot with a broader view of time-dependent
+#shifts in annotated cell types.
+
+celltype_prop <- data_rm@meta.data %>%
+  group_by(time, celltype) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(time) %>%
+  mutate(freq = n / sum(n))
+
+p_comp <- ggplot(celltype_prop, aes(x = time, y = freq, fill = celltype)) +
+  geom_bar(stat = "identity") +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Cell type composition across time",
+    x = "Time",
+    y = "Proportion"
+  ) +
+  scale_fill_brewer(palette = "Set2")
+
+print(p_comp)
+```
+
+9. Additional visualization: marker DotPlot across clusters
+```{r marker dot-plot, fig.width=10, fig.height=7}
+# This plot summarizes how representative cluster 24 marker genes
+# are distributed across all RM clusters. It is more interpretable
+# than the earlier heatmap attempt for this dataset.
+
+Idents(data_rm) <- "seurat_clusters"
+
+marker_panel <- c("Krt13", "Krt6b", "Plet1", "Csta1", "Prss27", "Calml3", "Pglyrp4")
+marker_panel <- intersect(marker_panel, rownames(data_rm))
+
+p_dot <- DotPlot(
+  data_rm,
+  features = marker_panel,
+  group.by = "seurat_clusters",
+  cols = c("grey90", "mediumpurple2", "blue3")
+) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Expression of representative cluster 24 marker genes",
+    x = "Genes",
+    y = "Cluster"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 10),
+    panel.grid.major = element_line(color = "grey85"),
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  )
+
+print(p_dot)
+```
