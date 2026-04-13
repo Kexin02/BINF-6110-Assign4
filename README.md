@@ -26,150 +26,142 @@ To assess temporal dynamics, the relative abundance of specific clusters and ann
 
 ## 3. Results
 
-### 3.1 Quality control of single-cell RNA-seq data
+### 3.1 Quality control indicates overall comparable data quality across conditions
 
-To ensure the reliability of downstream analyses, standard quality control metrics were first evaluated. The number of detected genes per cell (nFeature_RNA) exhibited comparable distributions across all timepoints, with similar medians and interquartile ranges (Figure 1). This indicates consistent library complexity and suggests that no subset of cells suffered from reduced gene detection.
+Quality control metrics showed that the dataset was broadly comparable across all timepoints. The distribution of detected genes per cell (nFeature_RNA) was similar among conditions, although D05 and D08 tended to show slightly higher medians, whereas D14 displayed a lower median and somewhat reduced upper range (Figure 1). A similar pattern was observed for total transcript counts per cell (nCount_RNA), with D05 and D08 exhibiting relatively higher central values and D14 shifted slightly lower (Figure 2). Despite these modest differences, the overall distributions remained within a similar range, suggesting that the samples were technically comparable and suitable for downstream analysis.
 
-Similarly, total transcript counts per cell (nCount_RNA) showed consistent distributions across conditions (Figure 2), supporting uniform sequencing depth and minimal technical variability. The absence of pronounced outliers further indicates that low-quality or multiplet cells were not a major confounding factor in the dataset.
-
-The relationship between sequencing depth and gene detection was further assessed by examining the correlation between nCount_RNA and nFeature_RNA. A strong positive correlation (r = 0.827) was observed (Figure 3), confirming that increased sequencing depth resulted in improved gene detection efficiency. Collectively, these results demonstrate that the dataset is of high quality and suitable for subsequent analyses.
+The relationship between sequencing depth and gene detection was further evaluated using a feature scatter plot. A strong positive correlation was observed between nCount_RNA and nFeature_RNA (r = 0.827), indicating that cells with higher transcript counts generally had more detected genes (Figure 3). The overall smooth relationship and lack of a dominant low-quality population support the conclusion that the dataset has acceptable quality for clustering and annotation.
 
 ![QC_nFeature](figures/1.QC_nFeature.png)
 
-**Figure 1. Distribution of detected genes per cell (nFeature_RNA).**  
-Violin plots show the number of genes detected per cell across all timepoints. Comparable distributions indicate consistent library complexity and high-quality data across conditions.
+**Figure 1. Distribution of detected genes per cell across timepoints.** Violin plots show the distribution of nFeature_RNA in D02, D05, D08, D14, and Naive samples, with embedded boxplots indicating the median and interquartile range. D05 and D08 display slightly higher central values, whereas D14 shows a lower median, suggesting modest time-dependent variation in transcriptional complexity while overall data quality remains comparable across conditions. 
 
 ![QC_nCount](figures/2.QC_nCount.png)
 
-**Figure 2. Distribution of total RNA counts per cell (nCount_RNA).**  
-Violin plots illustrate sequencing depth across samples. Similar distributions across timepoints suggest minimal technical variation.
+**Figure 2. Distribution of total transcript counts per cell across timepoints.** Violin plots show nCount_RNA for each condition. D05 and D08 exhibit relatively higher count distributions, while D14 is shifted modestly lower. Black points indicate cells with unusually high count values. Overall, the comparable distributions support consistent sequencing depth across samples.
 
 ![QC_scatter](figures/3.QC_scatter.png)
 
-**Figure 3. Correlation between sequencing depth and gene detection.**  
-Scatter plot of nCount_RNA versus nFeature_RNA shows a strong positive correlation (r = 0.827), indicating efficient gene capture and robust data quality.
+**Figure 3. Relationship between transcript counts and detected genes.** Scatter plot of nCount_RNA versus nFeature_RNA across all cells. Each point represents one cell and is colored by condition. The strong positive Pearson correlation (r = 0.827) indicates that gene detection scales appropriately with sequencing depth, supporting overall dataset quality.
 
-### 3.2 Clustering reveals transcriptional heterogeneity
+### 3.2 Unsupervised clustering identifies multiple transcriptionally distinct populations
 
-Dimensionality reduction using UMAP revealed a complex transcriptional landscape composed of multiple distinct clusters (Figure 4). These clusters represent transcriptionally heterogeneous cell populations within the respiratory mucosa.
+Unsupervised clustering of respiratory mucosa cells revealed extensive transcriptional heterogeneity, with 30 Seurat clusters resolved in UMAP space (Figure 4). Several large populations were clearly separated, including a major left-sided population, multiple right-sided clusters, and several smaller isolated groups. Notably, cluster 24 formed a small and highly separated population at the bottom of the embedding, suggesting a distinct transcriptional identity rather than a transitional state between major clusters.
 
-The spatial separation between clusters suggests substantial biological diversity, while some degree of continuity between clusters indicates transitional or intermediate states. This organization reflects both discrete cell identities and continuous transcriptional variation.
+These clusters were subsequently annotated into broader biological categories using canonical marker genes. The annotated UMAP resolved six major populations: epithelial cells, IFN-responsive epithelial cells, myeloid cells, olfactory neurons, T cells, and a small remodeling epithelial population (Figure 6). The annotated populations were spatially coherent and broadly consistent with the original unsupervised clustering structure, supporting the biological validity of the annotation.
 
 ![UMAP_clusters](figures/4.UMAP_clusters.png)
 
-**Figure 4. UMAP visualization of unsupervised clustering.**  
-Cells are grouped into transcriptionally distinct clusters based on gene expression profiles, revealing cellular heterogeneity within the dataset.
+**Figure 4. UMAP visualization of transcriptionally defined Seurat clusters.** Cells were clustered using a graph-based Seurat workflow and visualized by UMAP. Each color and label corresponds to one Seurat cluster. The clear separation between major groups indicates substantial transcriptional heterogeneity within the respiratory mucosa, while the presence of small isolated clusters suggests rare but biologically distinct cell states.
 
-### 3.3 Cell type annotation based on canonical markers
+![UMAP_annotation](figures/6.UMAP_annotation.png)
+**Figure 6. UMAP visualization of annotated major cell types.** Clusters were grouped into major biological categories based on canonical marker expression. Annotated populations include epithelial, IFN-responsive epithelial, myeloid, olfactory neuron, T-cell, and remodeling epithelial populations. The strong spatial coherence of annotated groups supports the robustness of the manual annotation strategy.
 
-To assign biological identities to clusters, canonical marker genes were examined. Violin plots demonstrated distinct expression patterns of key markers, including Epcam (epithelial), Cd3e (T cells), Lyz2 (myeloid), Krt13 (epithelial subset), and Cnga4 (olfactory neurons) (Figure 5). These markers showed strong specificity and minimal overlap across clusters.
+### 3.3 Canonical marker genes support cell type annotation
 
-Feature plots further confirmed that these markers localized to distinct regions of the UMAP embedding (Figure 7), reinforcing the spatial coherence of the identified populations. Based on these patterns, clusters were annotated into major cell types, including epithelial, IFN-responsive epithelial, myeloid, olfactory neuron, T cells, and remodeling epithelial populations (Figure 6).
+The annotation was supported by canonical marker expression patterns across clusters. Broad *Epcam* expression marked many epithelial-associated clusters, whereas *Cd3e* was restricted to a small subset corresponding to T cells (Figure 5). *Lyz2* was enriched in several right-sided clusters consistent with myeloid identity, while Cnga4 was concentrated in the large left-sided population annotated as olfactory neurons. In contrast, *Krt13* expression was highly restricted to a small isolated cluster, supporting its interpretation as a specialized epithelial subset rather than a general epithelial program.
+
+Feature plots confirmed these spatial relationships on the UMAP embedding (Figure 7). Epcam was widely distributed across epithelial regions, Cd3e localized to the T-cell compartment, Lyz2 was concentrated in myeloid populations, and Cnga4 marked the olfactory neuron territory. Most importantly, Krt13 was sharply localized to the isolated cluster 24, further supporting its classification as a remodeling epithelial population.
 
 ![Marker_violin](figures/5.Marker_violin.png)
 
-**Figure 5. Expression of canonical marker genes across clusters.**  
-Violin plots show distinct expression patterns of key markers used for cell type annotation, supporting accurate classification of cell populations.
+**Figure 5. Canonical marker expression across Seurat clusters.** Stacked violin plots show log-normalized expression of *Epcam*, *Cd3e*, *Lyz2*, *Krt13*, and *Cnga4* across clusters. *Epcam* broadly marks epithelial-associated clusters, *Cd3e* is restricted to T-cell clusters, *Lyz2* is enriched in myeloid populations, *Cnga4* marks olfactory neurons, and *Krt13* is highly specific to a small epithelial subset, supporting cluster-level annotation.
 
-![UMAP_annotation](figures/6.UMAP_annotation.png)
-
-**Figure 6. UMAP visualization of annotated cell types.**  
-Clusters are assigned to major biological cell types based on canonical marker expression.
 
 ![Feature_annotation](figures/7.Feature_annotation.png)
 
-**Figure 7. Spatial distribution of marker gene expression.**  
-Feature plots illustrate localization of canonical markers within the UMAP, confirming cluster identities.
+**Figure 7. Feature plots of canonical marker genes used for annotation.** UMAP feature plots show the spatial distribution of *Epcam*, *Cd3e*, *Lyz2*, *Krt13*, and *Cnga4*. Marker expression localizes to distinct UMAP regions, confirming the annotation of epithelial, T-cell, myeloid, olfactory neuron, and remodeling epithelial populations.
 
-### 3.4 Infection-related transcriptional programs
+### 3.4 Infection-related genes define activated epithelial and immune states
 
-To investigate infection-associated responses, the expression of interferon-stimulated and immune-related genes was examined. Genes such as Isg15, Ifit1, and Rsad2 exhibited elevated expression in specific epithelial and immune clusters (Figure 8), indicating activation of antiviral signaling pathways.
+Genes associated with interferon signaling and immune activation showed clear cell type–restricted expression patterns. *Isg15*, *Ifit1*, and *Rsad2* were enriched primarily in upper-right and right-central regions of the UMAP, corresponding to IFN-responsive epithelial and immune-associated populations (Figure 8). *Cxcl16* showed a similar but somewhat more localized pattern, whereas *Cd274* was more sparsely expressed but still concentrated in activated regions.
 
-Additional genes, including Cxcl16 and Cd274, displayed more localized expression patterns, suggesting roles in immune modulation and cell–cell communication. These findings highlight functional heterogeneity within epithelial populations and demonstrate that subsets of epithelial cells adopt immune-responsive transcriptional states.
+These results indicate that the response to infection is not uniform across all epithelial cells. Instead, a subset of epithelial and immune cells adopts a distinct antiviral or inflammatory transcriptional program, which supports separating IFN-responsive epithelial cells from baseline epithelial populations in the annotation.
 
 ![Feature_story](figures/8.Feature_story.png)
 
-**Figure 8. Expression of infection-related genes.**  
-Feature plots show expression of interferon-stimulated and immune-related genes, indicating activation of antiviral and inflammatory pathways.
+**Figure 8. Feature plots of infection- and immune-associated genes.** UMAP feature plots show the expression of *Isg15*, *Ifit1*, *Rsad2*, *Cxcl16*, and *Cd274*. These genes are enriched in specific upper-right and right-central regions of the UMAP, indicating activation of interferon-related and immune-associated transcriptional programs in a subset of epithelial and immune cells.
 
-### 3.5 Temporal dynamics of cluster 24
+### 3.5 A rare remodeling epithelial population expands at later timepoints
 
-Cluster 24 was identified as a distinct epithelial subpopulation exhibiting dynamic changes over time. Its relative abundance increased from 0.38% at D02 to 1.25% at D14, followed by a decrease in the naive condition (Figure 9).
+Cluster 24 remained rare across all conditions but displayed a clear temporal trend. Its relative abundance was low at D02 (0.00376) and lowest at D05 (0.00196), increased modestly at D08 (0.00499), and then rose sharply at D14 (0.0125) before returning to a lower level in the Naive condition (0.00350) (Figure 9). Although the absolute fraction of cells in this cluster was small, the substantial enrichment at D14 suggests that this population emerges preferentially during a later phase of the response.
 
-Although cluster 24 represents a small fraction of the total cell population, its consistent expansion at later timepoints suggests a biologically meaningful role. This temporal pattern is consistent with involvement in tissue remodeling or recovery processes rather than early immune activation.
+The delayed increase in cluster 24 is consistent with a role in epithelial remodeling or tissue recovery rather than immediate antiviral activation. Its temporal behavior also complements the IFN-related expression patterns shown in Figure 8, supporting a model in which early immune activation is followed by later epithelial restructuring.
 
 ![Cluster24_abundance](figures/9.Cluster24_abundance.png)
 
-**Figure 9. Temporal dynamics of cluster 24 abundance.**  
-The proportion of cluster 24 cells increases over time and peaks at D14, suggesting involvement in late-stage biological processes.
+**Figure 9. Relative abundance of cluster 24 across timepoints.** Line plot showing the proportion of cells assigned to cluster 24 in each condition. Cluster 24 remains rare overall but increases markedly at D14, consistent with a late-stage remodeling-associated epithelial response.
 
-### 3.6 Functional enrichment of cluster 24
+### 3.6 Over-representation analysis reveals wound healing and epithelial organization programs in cluster 24
 
-To further characterize cluster 24, Gene Ontology enrichment analysis was performed. Over-representation analysis (ORA) revealed significant enrichment of biological processes related to epidermal development, cell–cell junction organization, and wound healing (Figure 10).
+Functional enrichment of cluster 24 marker genes by over-representation analysis (ORA) revealed strong enrichment for biological processes related to epithelial differentiation, tissue repair, and structural organization (Figure 10). The most prominent terms included actin filament organization, regulation of proteolysis, epidermis development, and wound healing, together with cell-cell junction organization, cell-cell junction assembly, apical junction assembly, and keratinocyte differentiation.
 
-Complementary GSEA analysis identified enrichment of processes such as keratinization, RNA processing, translation, and ribonucleoprotein complex biogenesis (Figure 11). The convergence of these results suggests that cluster 24 is a metabolically active epithelial population undergoing differentiation and structural remodeling.
+These pathways strongly support the interpretation that cluster 24 represents an epithelial population engaged in structural remodeling and restoration of barrier architecture. Enrichment of junction- and membrane-localization terms further suggests that these cells are not merely stressed epithelial cells but are actively participating in rebuilding organized epithelial tissue.
 
 ![ORA_dotplot](figures/10.ORA_dotplot.png)
 
-**Figure 10. GO enrichment analysis (ORA) of cluster 24 marker genes.**  
-Dot plot showing significantly enriched biological processes. Dot size represents gene count, and color indicates adjusted p-values.
+**Figure 10. Gene Ontology enrichment analysis of cluster 24 marker genes by over-representation analysis.** Dot plot showing the top enriched biological processes identified by ORA. The x-axis represents gene ratio, dot size reflects the number of genes contributing to each term, and color indicates adjusted p-value significance. Enrichment is dominated by epithelial differentiation, cytoskeletal organization, junction assembly, and wound-healing processes, supporting a remodeling-associated epithelial phenotype.
+
+### 3.7 GSEA highlights biosynthetic and differentiation-associated transcriptional programs
+
+Gene set enrichment analysis (GSEA) provided complementary evidence that cluster 24 is transcriptionally active and functionally specialized (Figure 11). The most enriched pathways included keratinization, mRNA processing, translation, ribonucleoprotein complex biogenesis, RNA splicing, and cytoplasmic translation. Additional enrichment for protein-containing complex assembly and organization indicates active intracellular restructuring.
+
+Compared with the ORA results, which emphasized extracellular and tissue-level remodeling processes, GSEA highlights the intracellular biosynthetic programs that likely support this remodeling phenotype. Together, these results suggest that cluster 24 is not only structurally specialized but also metabolically active, with coordinated activation of differentiation and protein synthesis programs.
 
 ![GSEA_dotplot](figures/11.Cluster24_GSEA_dotplot.png)
 
 **Figure 11. GSEA of cluster 24 marker genes.**  
 Gene set enrichment analysis reveals activation of pathways related to keratinization, RNA processing, and translation, indicating active epithelial remodeling.
 
-### 3.7 Cell type composition changes over time
+### 3.8 Cell type composition shifts over time indicate coordinated immune activation and epithelial remodeling
 
-Analysis of overall cell type composition revealed dynamic but coordinated changes across timepoints (Figure 12). Epithelial cells remained the dominant population in all conditions, while IFN-responsive epithelial cells increased during intermediate stages (D05–D08) and declined thereafter.
+Changes in overall cell type composition revealed coordinated temporal dynamics across the tissue (Figure 12). Epithelial cells remained the dominant population at all timepoints, but their relative abundance decreased at intermediate stages, particularly D05 and D08. In contrast, IFN-responsive epithelial cells increased noticeably at D05 and remained elevated at D08, consistent with activation of antiviral signaling during the early-to-mid response.
 
-Immune populations, including myeloid cells and T cells, also exhibited temporal variation, suggesting coordinated immune activation. These results indicate that infection induces both compositional and transcriptional changes within the tissue.
+Myeloid cells also increased during the time course and were particularly prominent at D14, suggesting sustained or secondary immune involvement. T cells showed their strongest relative representation at D08, indicating an intermediate-stage adaptive immune component. Olfactory neurons remained comparatively stable, whereas remodeling epithelial cells remained a minor population overall, consistent with their rarity in Figure 9. Taken together, these shifts suggest a progression from early epithelial/immune activation toward later tissue remodeling.
 
 ![Celltype_composition](figures/12.Celltype_composition.png)
 
-**Figure 12. Cell type composition across timepoints.**  
-Stacked bar plots show relative proportions of major cell types. Temporal shifts reflect coordinated immune and epithelial responses.
+**Figure 12. Cell type composition across timepoints.** Stacked bar plot showing the relative proportions of annotated cell types in each condition. Epithelial cells dominate across all timepoints, while IFN-responsive epithelial, myeloid, and T-cell populations show dynamic changes over time. The overall pattern suggests coordinated progression from immune activation at intermediate timepoints to later epithelial remodeling.
 
-### 3.8 Marker gene expression defines cluster 24 identity
+### 3.9 Marker gene expression confirms the distinct identity of cluster 24
 
-Finally, the expression of representative marker genes was examined across clusters. Cluster 24 showed strong and specific expression of genes such as Krt13, Krt6b, Plet1, Csta1, Prss27, Calml3, and Pglyrp4 (Figure 13).
+The dot plot of representative marker genes confirmed that cluster 24 has a highly specific transcriptional signature (Figure 13). *Krt13*, *Krt6b*, *Plet1*, *Csta1*, *Prss27*, *Calml3*, and *Pglyrp4* all showed strong enrichment in cluster 24, with both high average expression and high percentages of expressing cells. Most of these markers showed minimal expression in other clusters, although Plet1 displayed weaker expression in a small number of non-cluster 24 cells.
 
-These genes are associated with epithelial differentiation and barrier function, further supporting the classification of cluster 24 as a specialized remodeling epithelial population.
+The combination of keratin-associated genes, epithelial differentiation markers, and barrier-associated genes strongly supports the interpretation that cluster 24 represents a distinct remodeling epithelial population rather than a generic epithelial or inflammatory state.
 
 ![Marker_dotplot](figures/13.Marker_dotplot.png)
 
-**Figure 13. Expression of representative cluster 24 marker genes.**  
-Dot plot shows expression level and proportion of expressing cells across clusters. Cluster 24 displays strong enrichment of epithelial remodeling markers.
+**Figure 13. Expression of representative marker genes for cluster 24 across all clusters.** Dot plot showing average expression (color intensity) and percentage of expressing cells (dot size) for selected marker genes across clusters. Cluster 24 exhibits strong and highly specific enrichment of *Krt13*, *Krt6b*, *Plet1*, *Csta1*, *Prss27*, *Calml3*, and *Pglyrp4*, confirming its identity as a distinct remodeling epithelial population.
 
 
 ## 4. Discussion
-This study provides a detailed characterization of cellular heterogeneity and transcriptional dynamics in the respiratory mucosa during infection. The results highlight both stable cell identities and dynamic transcriptional responses across time.
+This study provides a detailed characterization of cellular heterogeneity and transcriptional dynamics in the respiratory mucosa during infection. By combining clustering, marker-based annotation, temporal composition analysis, and functional enrichment, the results reveal both relatively stable major cell identities and dynamic state changes associated with immune activation and epithelial remodeling. In particular, the data support a model in which early and intermediate responses are dominated by interferon-associated epithelial and immune programs, whereas later stages are marked by the emergence of a distinct remodeling epithelial population.
 
-A key finding is the identification of a remodeling epithelial population (cluster 24), which exhibits a clear temporal increase and peaks at D14. This population shows strong enrichment of genes associated with epithelial differentiation, including Krt13 and Krt6b, as well as proteases such as Prss27. These features are consistent with epithelial remodeling and barrier repair processes observed in inflamed tissues (Garcia-Hernandez et al., 2023; Liao et al., 2025). The enrichment of keratinization and epidermal development pathways further supports this interpretation, suggesting that cluster 24 represents a differentiation-associated epithelial state.
+A key finding of this study is the identification of a rare but transcriptionally distinct remodeling epithelial population, cluster 24, which shows a clear temporal increase and peaks at D14. This cluster is characterized by strong expression of genes associated with epithelial differentiation and remodeling, including Krt13, Krt6b, Plet1, Csta1, and Prss27. The high specificity of these markers across clusters argues that cluster 24 is not simply a stressed epithelial subset, but rather a biologically distinct cell state. These features are consistent with epithelial remodeling and barrier repair processes observed in inflamed or regenerating mucosal tissues and align with recent work showing that epithelial injury responses are often accompanied by keratin-associated transcriptional reprogramming (Garcia-Hernandez et al., 2023; Liao et al., 2025). The ORA results further strengthen this interpretation by showing enrichment for wound healing, epidermis development, keratinocyte differentiation, and cell-cell junction organization, all of which are hallmarks of structural epithelial repair.
 
-In addition to structural remodeling, cluster 24 also shows enrichment of RNA processing and translation-related pathways. This indicates high metabolic and transcriptional activity, which is often associated with rapidly differentiating or regenerating cells (Ayyaz et al., 2019). Similar transcriptional signatures have been observed in epithelial regeneration following injury, where cells undergo coordinated changes in gene expression to restore tissue integrity.
+In addition to structural remodeling signatures, cluster 24 also showed enrichment for RNA-processing- and translation-related pathways in GSEA, including mRNA processing, RNA splicing, translation, and ribonucleoprotein complex biogenesis. This suggests that these cells are not only differentiated in identity but also highly biosynthetically active. Such a profile is often associated with epithelial populations undergoing active regeneration, where cellular restructuring is coupled with elevated transcriptional and translational demand (Ho et al., 2021). The coexistence of keratinization-related pathways and biosynthetic pathways is particularly notable, because it implies that cluster 24 may represent an actively differentiating repair state rather than a terminally quiescent epithelial population. Similar transcriptional signatures have been reported in regenerating epithelial compartments following injury, where restoration of tissue integrity requires both lineage-specific differentiation and coordinated macromolecular synthesis.
 
-Interferon-stimulated genes, including Isg15 and Ifit1, were upregulated in subsets of epithelial and immune cells, indicating activation of antiviral responses. These findings are consistent with previous studies demonstrating that epithelial cells play an active role in innate immunity through interferon signaling (Aarreberg et al., 2019; Liao et al., 2025). The presence of IFN-responsive epithelial cells highlights the functional plasticity of epithelial populations during infection.
+Another important result is the presence of interferon-responsive epithelial and immune-associated populations marked by genes such as Isg15, Ifit1, and Rsad2. These genes were enriched in restricted subsets of cells rather than uniformly across the tissue, indicating that infection-induced antiviral responses are spatially and cell-type specific. This selective activation is biologically plausible, as epithelial cells are increasingly recognized not only as passive barrier cells but also as active participants in innate immune sensing and signaling. Previous studies have shown that epithelial cells can initiate and amplify antiviral responses through interferon-mediated programs, thereby shaping the broader tissue immune environment (Dalskov et al., 2023; Liu et al., 2024; Major et al., 2020). In this context, the IFN-responsive epithelial compartment identified here likely represents an activated epithelial state that precedes or accompanies later tissue repair programs.
 
-Changes in cell composition further support a coordinated response. While epithelial cells remained dominant, IFN-responsive epithelial and immune populations exhibited temporal variation. This is consistent with studies showing that infection induces both immune infiltration and epithelial state transitions (Lindeboom et al., 2024; Melms et al., 2021). The increase in cluster 24 at later timepoints suggests a shift from immune activation to tissue repair.
+Changes in cell composition across time further support the interpretation of a coordinated and staged response. While epithelial cells remained the dominant population throughout the dataset, IFN-responsive epithelial cells were expanded at intermediate stages, and myeloid and T-cell populations also showed temporal variation. These patterns are consistent with a transition from early inflammatory and antiviral activation toward later epithelial restructuring. Similar shifts in cell abundance and state have been reported in infection and inflammation models, where epithelial injury is accompanied by immune recruitment, transient activation states, and subsequent restoration programs (Kim et al., 2023; Oikonomou et al., 2021; Wynn & Vannella, 2016). The increase of cluster 24 at D14 is therefore especially informative, because it suggests that remodeling-associated epithelial programs intensify after the peak of early immune signaling rather than simultaneously with it.
 
-Despite these insights, several limitations should be considered. First, cell type annotation relied on canonical markers, which may not fully capture intermediate or transitional states. Second, clustering results depend on parameters such as resolution and dimensionality, which can influence interpretation. Third, enrichment analyses rely on existing annotations and may not identify novel biological processes.
+Despite these insights, several limitations should be considered. First, cell type annotation relied primarily on canonical markers, which may not fully resolve intermediate or transitional states. This is particularly relevant for epithelial populations, where activation, injury, and differentiation states can partially overlap transcriptionally. Second, clustering outcomes depend on analytical choices such as dimensionality and resolution, and alternative parameter settings could merge or split some of the observed populations. Third, enrichment analyses depend on existing gene annotations and curated pathway databases, which may bias interpretation toward well-characterized biological processes while underrepresenting novel or poorly annotated functions.
 
-Furthermore, this study analyzes discrete timepoints rather than continuous trajectories. Methods such as pseudotime analysis or RNA velocity could provide additional insight into lineage relationships and state transitions (Hou et al., 2023; La Manno et al., 2018). Future work integrating these approaches, along with experimental validation, would strengthen the conclusions.
+A further limitation is that the present study examines discrete timepoints rather than continuous cellular trajectories. As a result, the data support temporal association but do not directly establish lineage relationships between IFN-responsive epithelial states and remodeling epithelial states. Methods such as pseudotime inference, RNA velocity, or lineage tracing would be valuable for testing whether cluster 24 emerges from pre-existing epithelial populations that undergo progressive state transitions during recovery (Hou et al., 2023; La Manno et al., 2018). In addition, experimental validation of marker genes such as Krt13, Krt6b, and Plet1 would strengthen the interpretation that cluster 24 represents a true repair-associated epithelial population in vivo.
 
-Overall, this study demonstrates the power of single-cell transcriptomics in uncovering dynamic cellular responses to infection. The identification of a remodeling epithelial population provides new insight into tissue repair mechanisms and highlights potential targets for further investigation.
+Overall, this study demonstrates the power of single-cell transcriptomics in uncovering dynamic cellular responses to infection in the respiratory mucosa. Rather than revealing only static cell identities, the analysis captures a temporal sequence of epithelial and immune state changes, from interferon-associated activation to late remodeling-associated differentiation. The identification of a remodeling epithelial population that peaks at D14 and is enriched for wound-healing, keratinization, and RNA-processing programs provides new insight into how mucosal tissues may transition from immune defense to structural repair. These findings highlight cluster 24 as a biologically interesting candidate for future investigation into epithelial recovery, barrier restoration, and post-infectious tissue remodeling.
 
 
 ## 5. References
-Aarreberg, L. D., Esser-Nobis, K., Driscoll, C., Shuvarikov, A., Roby, J. A., & Gale, M. (2019). Interleukin-1β Induces mtDNA Release to Activate Innate Immune Signaling via cGAS-STING. Molecular Cell, 74(4), 801-815.e6. https://doi.org/10.1016/j.molcel.2019.02.038
-
-Ayyaz, A., Kumar, S., Sangiorgi, B., Ghoshal, B., Gosio, J., Ouladan, S., Fink, M., Barutcu, S., Trcka, D., Shen, J., Chan, K., Wrana, J. L., & Gregorieff, A. (2019). Single-cell transcriptomes of the regenerating intestine reveal a revival stem cell. Nature, 569(7754), 121–125. https://doi.org/10.1038/s41586-019-1154-y
+Dalskov, L., Gad, H. H., & Hartmann, R. (2023). Viral recognition and the antiviral interferon response. The EMBO Journal, 42(14), e112907. https://doi.org/10.15252/embj.2022112907
 
 Garcia-Hernandez, V., Raya-Sandino, A., Azcutia, V., Miranda, J., Kelm, M., Flemming, S., Birkl, D., Quiros, M., Brazil, J. C., Parkos, C. A., & Nusrat, A. (2023). Inhibition of Soluble Stem Cell Factor Promotes Intestinal Mucosal Repair. Inflammatory Bowel Diseases, 29(7), 1133–1144. https://doi.org/10.1093/ibd/izad003
 
 Gribov, A., Sill, M., Lück, S., Rücker, F., Döhner, K., Bullinger, L., Benner, A., & Unwin, A. (2010). SEURAT: Visual analytics for the integrated analysis of microarray data. BMC Medical Genomics, 3(1), 21. https://doi.org/10.1186/1755-8794-3-21
 
 Hao, Y., Stuart, T., Kowalski, M. H., Choudhary, S., Hoffman, P., Hartman, A., Srivastava, A., Molla, G., Madad, S., Fernandez-Granda, C., & Satija, R. (2024). Dictionary learning for integrative, multimodal and scalable single-cell analysis. Nature Biotechnology, 42(2), 293–304. https://doi.org/10.1038/s41587-023-01767-y
+
+Ho, J. J. D., Man, J. H. S., Schatz, J. H., & Marsden, P. A. (2021). Translational remodeling by RNA-binding proteins and noncoding RNAs. WIREs RNA, 12(5), e1647. https://doi.org/10.1002/wrna.1647
 
 Holtzman, M. J., Morton, J. D., Shornick, L. P., Tyner, J. W., O’Sullivan, M. P., Antao, A., Lo, M., Castro, M., & Walter, M. J. (2002). Immunity, Inflammation, and Remodeling in the Airway Epithelial Barrier: Epithelial-Viral-Allergic Paradigm. Physiological Reviews, 82(1), 19–46. https://doi.org/10.1152/physrev.00020.2001
 
@@ -178,6 +170,8 @@ Hou, W., Ji, Z., Chen, Z., Wherry, E. J., Hicks, S. C., & Ji, H. (2023). A stati
 Jin, S., MacLean, A. L., Peng, T., & Nie, Q. (2018). scEpath: Energy landscape-based inference of transition probabilities and cellular trajectories from single-cell transcriptomic data. Bioinformatics, 34(12), 2077–2086. https://doi.org/10.1093/bioinformatics/bty058
 
 Khozyainova, A. A., Valyaeva, A. A., Arbatsky, M. S., Isaev, S. V., Iamshchikov, P. S., Volchkov, E. V., Sabirov, M. S., Zainullina, V. R., Chechekhin, V. I., Vorobev, R. S., Menyailo, M. E., Tyurin-Kuzmin, P. A., & Denisov, E. V. (2023). Complex Analysis of Single-Cell RNA Sequencing Data. Biochemistry (Moscow), 88(2), 231–252. https://doi.org/10.1134/S0006297923020074
+
+Kim, J., Kim, S., Lee, S.-Y., Jo, B.-K., Oh, J.-Y., Kwon, E.-J., Kim, K.-T., Adpaikar, A. A., Kim, E.-J., Jung, H.-S., Kim, H.-R., Roe, J.-S., Hong, C. P., Kim, J. K., Koo, B.-K., & Cha, H.-J. (2023). Partial in vivo reprogramming enables injury-free intestinal regeneration via autonomous Ptgs1 induction. Science Advances, 9(47), eadi8454. https://doi.org/10.1126/sciadv.adi8454
 
 Kolde, R. (2010). pheatmap: Pretty Heatmaps (p. 1.0.13) [Dataset]. https://doi.org/10.32614/CRAN.package.pheatmap
 
@@ -189,11 +183,13 @@ Li, Y., Baccelli, F., Dhillon, H. S., & Andrews, J. G. (2015). Statistical Model
 
 Liao, G., Nakayama, T., Zhu, B., Lee, I. T., Yeung, J., Yeo, Y. Y., Chang, Y., Wang, C., Liao, S. C.-K., Nkosi, D., Renteria, A., Bravo, D. T., Overdevest, J. B., Yan, C. H., Zarabanda, D., Gall, P. A., Dholakia, S. S., Borchard, N. A., Yang, A., … Jiang, S. (2025). Multi-scaled transcriptomics of chronically inflamed nasal epithelium reveals immune-epithelial dynamics and tissue remodeling in nasal polyp formation. Immunity, 58(10), 2593-2608.e6. https://doi.org/10.1016/j.immuni.2025.08.009
 
-Lindeboom, R. G. H., Worlock, K. B., Dratva, L. M., Yoshida, M., Scobie, D., Wagstaffe, H. R., Richardson, L., Wilbrey-Clark, A., Barnes, J. L., Kretschmer, L., Polanski, K., Allen-Hyttinen, J., Mehta, P., Sumanaweera, D., Boccacino, J. M., Sungnak, W., Elmentaite, R., Huang, N., Mamanova, L., … Teichmann, S. A. (2024). Human SARS-CoV-2 challenge uncovers local and systemic response dynamics. Nature, 631(8019), 189–198. https://doi.org/10.1038/s41586-024-07575-x
+Liu, Y.-G., Jin, S.-W., Zhang, S.-S., Xia, T.-J., Liao, Y.-H., Pan, R.-L., Yan, M.-Z., & Chang, Q. (2024). Interferon lambda in respiratory viral infection: Immunomodulatory functions and antiviral effects in epithelium. Frontiers in Immunology, 15, 1338096. https://doi.org/10.3389/fimmu.2024.1338096
+
+Major, J., Crotta, S., Llorian, M., McCabe, T. M., Gad, H. H., Priestnall, S. L., Hartmann, R., & Wack, A. (2020). Type I and III interferons disrupt lung epithelial repair during recovery from viral infection. Science (New York, N.y.), 369(6504), 712–717. https://doi.org/10.1126/science.abc2061
 
 Marc Carlson. (2025). org.Mm.eg.db: Genome wide annotation for Mouse (Version v3.21.0) [Computer software].
 
-Melms, J. C., Biermann, J., Huang, H., Wang, Y., Nair, A., Tagore, S., Katsyv, I., Rendeiro, A. F., Amin, A. D., Schapiro, D., Frangieh, C. J., Luoma, A. M., Filliol, A., Fang, Y., Ravichandran, H., Clausi, M. G., Alba, G. A., Rogava, M., Chen, S. W., … Izar, B. (2021). A molecular single-cell lung atlas of lethal COVID-19. Nature, 595(7865), 114–119. https://doi.org/10.1038/s41586-021-03569-1
+Oikonomou, N., Schuijs, M. J., Chatzigiagkos, A., Androulidaki, A., Aidinis, V., Hammad, H., Lambrecht, B. N., & Pasparakis, M. (2021). Airway epithelial cell necroptosis contributes to asthma exacerbation in a mouse model of house dust mite-induced allergic inflammation. Mucosal Immunology, 14(5), 1160–1171. https://doi.org/10.1038/s41385-021-00415-5
 
 Pedersen, T. L. (2019). patchwork: The Composer of Plots (p. 1.3.2) [Dataset]. https://doi.org/10.32614/CRAN.package.patchwork
 
@@ -205,9 +201,7 @@ Wickham, H. (2016). Data Analysis. In H. Wickham, Ggplot2 (pp. 189–201). Sprin
 
 Wickham, H., François, R., Henry, L., Müller, K., & Vaughan, D. (2014). dplyr: A Grammar of Data Manipulation (p. 1.2.1) [Dataset]. https://doi.org/10.32614/CRAN.package.dplyr
 
+Wynn, T. A., & Vannella, K. M. (2016). Macrophages in Tissue Repair, Regeneration, and Fibrosis. Immunity, 44(3), 450–462. https://doi.org/10.1016/j.immuni.2016.02.015
+
 Yu, G. (2024). Thirteen years of clusterProfiler. The Innovation, 5(6), 100722. https://doi.org/10.1016/j.xinn.2024.100722
-
-
-
-
 
