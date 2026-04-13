@@ -162,27 +162,49 @@ Overall, this study demonstrates the power of single-cell transcriptomics in unc
 
 ## 5. References
 Aarreberg, L. D., Esser-Nobis, K., Driscoll, C., Shuvarikov, A., Roby, J. A., & Gale, M. (2019). Interleukin-1β Induces mtDNA Release to Activate Innate Immune Signaling via cGAS-STING. Molecular Cell, 74(4), 801-815.e6. https://doi.org/10.1016/j.molcel.2019.02.038
+
 Ayyaz, A., Kumar, S., Sangiorgi, B., Ghoshal, B., Gosio, J., Ouladan, S., Fink, M., Barutcu, S., Trcka, D., Shen, J., Chan, K., Wrana, J. L., & Gregorieff, A. (2019). Single-cell transcriptomes of the regenerating intestine reveal a revival stem cell. Nature, 569(7754), 121–125. https://doi.org/10.1038/s41586-019-1154-y
+
 Garcia-Hernandez, V., Raya-Sandino, A., Azcutia, V., Miranda, J., Kelm, M., Flemming, S., Birkl, D., Quiros, M., Brazil, J. C., Parkos, C. A., & Nusrat, A. (2023). Inhibition of Soluble Stem Cell Factor Promotes Intestinal Mucosal Repair. Inflammatory Bowel Diseases, 29(7), 1133–1144. https://doi.org/10.1093/ibd/izad003
+
 Gribov, A., Sill, M., Lück, S., Rücker, F., Döhner, K., Bullinger, L., Benner, A., & Unwin, A. (2010). SEURAT: Visual analytics for the integrated analysis of microarray data. BMC Medical Genomics, 3(1), 21. https://doi.org/10.1186/1755-8794-3-21
+
 Hao, Y., Stuart, T., Kowalski, M. H., Choudhary, S., Hoffman, P., Hartman, A., Srivastava, A., Molla, G., Madad, S., Fernandez-Granda, C., & Satija, R. (2024). Dictionary learning for integrative, multimodal and scalable single-cell analysis. Nature Biotechnology, 42(2), 293–304. https://doi.org/10.1038/s41587-023-01767-y
+
 Holtzman, M. J., Morton, J. D., Shornick, L. P., Tyner, J. W., O’Sullivan, M. P., Antao, A., Lo, M., Castro, M., & Walter, M. J. (2002). Immunity, Inflammation, and Remodeling in the Airway Epithelial Barrier: Epithelial-Viral-Allergic Paradigm. Physiological Reviews, 82(1), 19–46. https://doi.org/10.1152/physrev.00020.2001
+
 Hou, W., Ji, Z., Chen, Z., Wherry, E. J., Hicks, S. C., & Ji, H. (2023). A statistical framework for differential pseudotime analysis with multiple single-cell RNA-seq samples. Nature Communications, 14(1), 7286. https://doi.org/10.1038/s41467-023-42841-y
+
 Jin, S., MacLean, A. L., Peng, T., & Nie, Q. (2018). scEpath: Energy landscape-based inference of transition probabilities and cellular trajectories from single-cell transcriptomic data. Bioinformatics, 34(12), 2077–2086. https://doi.org/10.1093/bioinformatics/bty058
+
 Khozyainova, A. A., Valyaeva, A. A., Arbatsky, M. S., Isaev, S. V., Iamshchikov, P. S., Volchkov, E. V., Sabirov, M. S., Zainullina, V. R., Chechekhin, V. I., Vorobev, R. S., Menyailo, M. E., Tyurin-Kuzmin, P. A., & Denisov, E. V. (2023). Complex Analysis of Single-Cell RNA Sequencing Data. Biochemistry (Moscow), 88(2), 231–252. https://doi.org/10.1134/S0006297923020074
+
 Kolde, R. (2010). pheatmap: Pretty Heatmaps (p. 1.0.13) [Dataset]. https://doi.org/10.32614/CRAN.package.pheatmap
+
 La Manno, G., Soldatov, R., Zeisel, A., Braun, E., Hochgerner, H., Petukhov, V., Lidschreiber, K., Kastriti, M. E., Lönnerberg, P., Furlan, A., Fan, J., Borm, L. E., Liu, Z., van Bruggen, D., Guo, J., He, X., Barker, R., Sundström, E., Castelo-Branco, G., … Kharchenko, P. V. (2018). RNA velocity of single cells. Nature, 560(7719), 494–498. https://doi.org/10.1038/s41586-018-0414-6
+
 Li, J., Jiang, Y., Ma, M., Wang, L., Jing, M., Yang, Z., Zhang, M., Chen, K., & Fan, J. (2025). Epithelial cell diversity and immune remodeling in bladder cancer progression: Insights from single-cell transcriptomics. Journal of Translational Medicine, 23(1), 135. https://doi.org/10.1186/s12967-025-06138-6
+
 Li, Y., Baccelli, F., Dhillon, H. S., & Andrews, J. G. (2015). Statistical Modeling and Probabilistic Analysis of Cellular Networks With Determinantal Point Processes. IEEE Transactions on Communications, 63(9), 3405–3422. https://doi.org/10.1109/TCOMM.2015.2456016
+
 Liao, G., Nakayama, T., Zhu, B., Lee, I. T., Yeung, J., Yeo, Y. Y., Chang, Y., Wang, C., Liao, S. C.-K., Nkosi, D., Renteria, A., Bravo, D. T., Overdevest, J. B., Yan, C. H., Zarabanda, D., Gall, P. A., Dholakia, S. S., Borchard, N. A., Yang, A., … Jiang, S. (2025). Multi-scaled transcriptomics of chronically inflamed nasal epithelium reveals immune-epithelial dynamics and tissue remodeling in nasal polyp formation. Immunity, 58(10), 2593-2608.e6. https://doi.org/10.1016/j.immuni.2025.08.009
+
 Lindeboom, R. G. H., Worlock, K. B., Dratva, L. M., Yoshida, M., Scobie, D., Wagstaffe, H. R., Richardson, L., Wilbrey-Clark, A., Barnes, J. L., Kretschmer, L., Polanski, K., Allen-Hyttinen, J., Mehta, P., Sumanaweera, D., Boccacino, J. M., Sungnak, W., Elmentaite, R., Huang, N., Mamanova, L., … Teichmann, S. A. (2024). Human SARS-CoV-2 challenge uncovers local and systemic response dynamics. Nature, 631(8019), 189–198. https://doi.org/10.1038/s41586-024-07575-x
+
 Marc Carlson. (2025). org.Mm.eg.db: Genome wide annotation for Mouse (Version v3.21.0) [Computer software].
+
 Melms, J. C., Biermann, J., Huang, H., Wang, Y., Nair, A., Tagore, S., Katsyv, I., Rendeiro, A. F., Amin, A. D., Schapiro, D., Frangieh, C. J., Luoma, A. M., Filliol, A., Fang, Y., Ravichandran, H., Clausi, M. G., Alba, G. A., Rogava, M., Chen, S. W., … Izar, B. (2021). A molecular single-cell lung atlas of lethal COVID-19. Nature, 595(7865), 114–119. https://doi.org/10.1038/s41586-021-03569-1
+
 Pedersen, T. L. (2019). patchwork: The Composer of Plots (p. 1.3.2) [Dataset]. https://doi.org/10.32614/CRAN.package.patchwork
+
 Potter, S. S. (2018). Single-cell RNA sequencing for the study of development, physiology and disease. Nature Reviews Nephrology, 14(8), 479–492. https://doi.org/10.1038/s41581-018-0021-7
+
 Şenel, S. (2021). An Overview of Physical, Microbiological and Immune Barriers of Oral Mucosa. International Journal of Molecular Sciences, 22(15), 7821. https://doi.org/10.3390/ijms22157821
+
 Wickham, H. (2016). Data Analysis. In H. Wickham, Ggplot2 (pp. 189–201). Springer International Publishing. https://doi.org/10.1007/978-3-319-24277-4_9
+
 Wickham, H., François, R., Henry, L., Müller, K., & Vaughan, D. (2014). dplyr: A Grammar of Data Manipulation (p. 1.2.1) [Dataset]. https://doi.org/10.32614/CRAN.package.dplyr
+
 Yu, G. (2024). Thirteen years of clusterProfiler. The Innovation, 5(6), 100722. https://doi.org/10.1016/j.xinn.2024.100722
 
 
