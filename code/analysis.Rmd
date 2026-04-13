@@ -166,6 +166,7 @@ top_markers_rm <- markers_rm %>%
   ungroup()
 
 print(top_markers_rm)
+write.csv(top_markers_rm, "../data/top_markers_rm.csv", row.names = FALSE)
 ```
 
 ```{r manual-annotation}
