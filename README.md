@@ -1,5 +1,9 @@
 # 
 
+## 1. Introduction
+
+## 2. Methods
+
 ## 3. Results
 
 ### 3.1 Quality control of single-cell RNA-seq data
@@ -25,7 +29,7 @@ Violin plots illustrate sequencing depth across samples. Similar distributions a
 **Figure 3. Correlation between sequencing depth and gene detection.**  
 Scatter plot of nCount_RNA versus nFeature_RNA shows a strong positive correlation (r = 0.827), indicating efficient gene capture and robust data quality.
 
-## 3.2 Clustering reveals transcriptional heterogeneity
+### 3.2 Clustering reveals transcriptional heterogeneity
 
 Dimensionality reduction using UMAP revealed a complex transcriptional landscape composed of multiple distinct clusters (Figure 4). These clusters represent transcriptionally heterogeneous cell populations within the respiratory mucosa.
 
@@ -36,7 +40,7 @@ The spatial separation between clusters suggests substantial biological diversit
 **Figure 4. UMAP visualization of unsupervised clustering.**  
 Cells are grouped into transcriptionally distinct clusters based on gene expression profiles, revealing cellular heterogeneity within the dataset.
 
-## 3.3 Cell type annotation based on canonical markers
+### 3.3 Cell type annotation based on canonical markers
 
 To assign biological identities to clusters, canonical marker genes were examined. Violin plots demonstrated distinct expression patterns of key markers, including Epcam (epithelial), Cd3e (T cells), Lyz2 (myeloid), Krt13 (epithelial subset), and Cnga4 (olfactory neurons) (Figure 5). These markers showed strong specificity and minimal overlap across clusters.
 
@@ -52,7 +56,7 @@ Violin plots show distinct expression patterns of key markers used for cell type
 **Figure 6. UMAP visualization of annotated cell types.**  
 Clusters are assigned to major biological cell types based on canonical marker expression.
 
-## 3.4 Infection-related transcriptional programs
+### 3.4 Infection-related transcriptional programs
 
 To investigate infection-associated responses, the expression of interferon-stimulated and immune-related genes was examined. Genes such as Isg15, Ifit1, and Rsad2 exhibited elevated expression in specific epithelial and immune clusters (Figure 8), indicating activation of antiviral signaling pathways.
 
@@ -63,7 +67,7 @@ Additional genes, including Cxcl16 and Cd274, displayed more localized expressio
 **Figure 8. Expression of infection-related genes.**  
 Feature plots show expression of interferon-stimulated and immune-related genes, indicating activation of antiviral and inflammatory pathways.
 
-## 3.5 Temporal dynamics of cluster 24
+### 3.5 Temporal dynamics of cluster 24
 
 Cluster 24 was identified as a distinct epithelial subpopulation exhibiting dynamic changes over time. Its relative abundance increased from 0.38% at D02 to 1.25% at D14, followed by a decrease in the naive condition (Figure 9).
 
@@ -74,7 +78,7 @@ Although cluster 24 represents a small fraction of the total cell population, it
 **Figure 9. Temporal dynamics of cluster 24 abundance.**  
 The proportion of cluster 24 cells increases over time and peaks at D14, suggesting involvement in late-stage biological processes.
 
-## 3.6 Functional enrichment of cluster 24
+### 3.6 Functional enrichment of cluster 24
 
 To further characterize cluster 24, Gene Ontology enrichment analysis was performed. Over-representation analysis (ORA) revealed significant enrichment of biological processes related to epidermal development, cell–cell junction organization, and wound healing (Figure 10).
 
@@ -90,7 +94,7 @@ Dot plot showing significantly enriched biological processes. Dot size represent
 **Figure 11. GSEA of cluster 24 marker genes.**  
 Gene set enrichment analysis reveals activation of pathways related to keratinization, RNA processing, and translation, indicating active epithelial remodeling.
 
-## 3.7 Cell type composition changes over time
+### 3.7 Cell type composition changes over time
 
 Analysis of overall cell type composition revealed dynamic but coordinated changes across timepoints (Figure 12). Epithelial cells remained the dominant population in all conditions, while IFN-responsive epithelial cells increased during intermediate stages (D05–D08) and declined thereafter.
 
@@ -101,7 +105,7 @@ Immune populations, including myeloid cells and T cells, also exhibited temporal
 **Figure 12. Cell type composition across timepoints.**  
 Stacked bar plots show relative proportions of major cell types. Temporal shifts reflect coordinated immune and epithelial responses.
 
-## 3.8 Marker gene expression defines cluster 24 identity
+### 3.8 Marker gene expression defines cluster 24 identity
 
 Finally, the expression of representative marker genes was examined across clusters. Cluster 24 showed strong and specific expression of genes such as Krt13, Krt6b, Plet1, Csta1, Prss27, Calml3, and Pglyrp4 (Figure 13).
 
@@ -113,4 +117,8 @@ These genes are associated with epithelial differentiation and barrier function,
 Dot plot shows expression level and proportion of expressing cells across clusters. Cluster 24 displays strong enrichment of epithelial remodeling markers.
 
 ## 4. Discussion
+
+
+## 5. References
+
 
